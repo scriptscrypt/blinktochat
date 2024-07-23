@@ -36,7 +36,7 @@ export const GET = async (req: Request) => {
 
   //
   console.log(`Starting the bot`);
-  bot.start();
+  // bot.start();
 
   const requestUrl = new URL(req.url);
   // const { validator } = validatedQueryParams(requestUrl);
@@ -122,16 +122,16 @@ export const POST = async (req: Request) => {
   // };
 
   try {
-    const response = await fetch(url, {
-      method: "POST",
+    const response = await axios.post(url, {
       headers: {
         "Content-Type": "application/json",
       },
     });
 
-    const data = response.json || {};
+    // console.log(`data in addUser is ${response?.data}`);
 
-    console.log(`data in addUser is`, JSON.stringify(data, null, 2));
+    // console.log(response?.data?.message);
+    const inviteLinkfromRes = response?.data?.message;
 
     const connection = new Connection(
       process.env.SOLANA_RPC! || clusterApiUrl("devnet")
@@ -147,7 +147,7 @@ export const POST = async (req: Request) => {
       SystemProgram.transfer({
         fromPubkey: account,
         toPubkey: account,
-        lamports: 0.0 * LAMPORTS_PER_SOL,
+        lamports: parseFloat(amountIp) * LAMPORTS_PER_SOL,
       })
     );
 
@@ -159,13 +159,8 @@ export const POST = async (req: Request) => {
     const payload: ActionPostResponse = await createPostResponse({
       fields: {
         transaction,
-        message: `The Account : ${
-          body.account
-        } with username ${tgUserIdIp} has been added to the Group for ${amountIp} SOL data : ${JSON.stringify(
-          data,
-          null,
-          2
-        )}`,
+        // message: `The PubKey : ${body.account} with Telegram username ${tgUserIdIp} has been added to the Group for ${amountIp} SOL,  data : ${response}`,
+        message: inviteLinkfromRes,
       },
     });
 
