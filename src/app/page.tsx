@@ -1,12 +1,12 @@
 import Image from "next/image";
 
-import { headers } from "next/headers";
+// import { headers } from "next/headers";
 
 export default function Home() {
   
   // const headersList = headers();
   // const fullUrl = headersList.get("referer") || "";
-  const fullUrl = "https://teleblinks.vercel.app";
+  const fullUrl = "https://teleblinks.vercel.app/";
   
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">

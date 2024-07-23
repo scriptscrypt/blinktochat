@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { headers } from "next/headers";
 
-// const fullUrl = headers().get("referer") || "";
-const fullUrl = "https://teleblinks.vercel.app";
+const fullUrl = "https://teleblinks.vercel.app/";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
