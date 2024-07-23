@@ -37,11 +37,16 @@ export const GET = async (req: Request) => {
       actions: [
         {
           label: "Enter the Chat",
-          href: `${baseHref}/addUser?paramTgUserId={paramTgUserId}`,
+          href: `${baseHref}/addUser?paramTgUserId={paramTgUserId}&paramAmount={paramAmount}`,
           parameters: [
             {
               name: "paramTgUserId",
               label: "Enter the TgUserId",
+              required: true,
+            },
+            {
+              name: "paramAmount",
+              label: "Enter the Amount in SOL",
               required: true,
             },
           ],
@@ -60,36 +65,41 @@ export const GET = async (req: Request) => {
 export const OPTIONS = GET;
 
 // Testing in the Same File - Working :
-const tgAPIKEY = process.env.NEXT_PUBLIC_TG_API_KEY;
+const tgBotToken = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN;
 
 export const POST = async (req: Request) => {
   const requestUrl = new URL(req.url);
-  // const figmaUrl = requestUrl.searchParams.get("paramFigmaUrl");
-  // const prompt = requestUrl.searchParams.get("paramPrompt");
+  const tgUserIdIp = requestUrl.searchParams.get("paramTgUserId");
+  const amountIp = requestUrl.searchParams.get("paramAmount");
 
-  // const fileId = utilExtractFigmaId(figmaUrl as string);
-  // console.log(`figmaUrl is`, figmaUrl);
-  // console.log(`fileId is`, fileId);
-  // console.log(`prompt is`, prompt);
-  console.log(`tgAPIKEY is`, tgAPIKEY);
+  console.log(`tgAPIKEY is`, tgBotToken);
+  console.log(`tgUserIdIp is`, tgUserIdIp);
+  console.log(`amountIp is`, amountIp);
 
-  // if (!fileId) {
-  //   return new Response(JSON.stringify({ error: "Invalid Figma URL" }), {
-  //     status: 400,
-  //     headers: { "Content-Type": "application/json" },
-  //   });
-  // }
+  if (!tgUserIdIp || !amountIp) {
+    return new Response(
+      JSON.stringify({
+        error: "Invalid parameters: paramTgUserId or paramAmount",
+      }),
+      {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
 
-  // const url = `https://api.figma.com/v1/files/${fileId}`;
+  const url = `/api/saveToDB?paramTgUserId=${tgUserIdIp}&paramAmount=${amountIp}&paramUsername=${tgUserIdIp}`;
 
-  const headers = {
-    "X-Figma-Token": tgAPIKEY,
-    "Content-Type": "application/json",
-  };
+  // const headers = {
+  //   "X-Figma-Token": tgAPIKEY,
+  //   "Content-Type": "application/json",
+  // };
 
   try {
-    // const response = await axios.get(url, { headers });
-    // const data = response.data || {};
+    const response = await axios.post(url, {
+      // headers
+    });
+    const data = response.data || {};
 
     const connection = new Connection(
       process.env.SOLANA_RPC! || clusterApiUrl("devnet")
