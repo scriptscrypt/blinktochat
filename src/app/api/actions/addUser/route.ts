@@ -1,4 +1,3 @@
-import { utilExtractFigmaId } from "@/lib/utils/utilExtractFigmaId";
 import {
   ActionPostResponse,
   ACTIONS_CORS_HEADERS,
@@ -20,7 +19,6 @@ export const GET = async (req: Request) => {
   const requestUrl = new URL(req.url);
   // const { validator } = validatedQueryParams(requestUrl);
 
-  // https://www.figma.com/design/BwYcyPfNEVqZLcjyf3lM95/TEST-for-BLINKS%232
   const baseHref = new URL(
     // `/api/actions/test1?validator=${validator.toBase58()}`,
     // requestUrl.origin,
@@ -88,18 +86,30 @@ export const POST = async (req: Request) => {
     );
   }
 
-  const url = `/api/saveToDB?paramTgUserId=${tgUserIdIp}&paramAmount=${amountIp}&paramUsername=${tgUserIdIp}`;
+  const baseHref = new URL(
+    // `/api/actions/test1?validator=${validator.toBase58()}`,
+    // requestUrl.origin,
+    `/api/actions/saveToDB`,
+    requestUrl.origin
+  ).toString();
+
+  const url = `${baseHref}?paramTgUserId=${tgUserIdIp}&paramAmount=${amountIp}&paramUsername=${tgUserIdIp}`;
 
   // const headers = {
-  //   "X-Figma-Token": tgAPIKEY,
   //   "Content-Type": "application/json",
   // };
 
   try {
-    const response = await axios.post(url, {
-      // headers
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
-    const data = response.data || {};
+
+    const data = response.json || {};
+
+    console.log(`data in addUser is`, data);
 
     const connection = new Connection(
       process.env.SOLANA_RPC! || clusterApiUrl("devnet")
@@ -124,16 +134,10 @@ export const POST = async (req: Request) => {
       await connection.getLatestBlockhash()
     ).blockhash;
 
-    // const payload: ActionPostResponse = {
-    //   transaction: transaction.serialize().toString("base64"),
-    //   message: `figmaFileUrl is ${figmaUrl} and data is ${data}`,
-
-    // };
     const payload: ActionPostResponse = await createPostResponse({
       fields: {
         transaction,
-        // message: `figmaFileUrl is ${figmaUrl} and data is ${data}`,
-        message: `figmaFileUrl is ${body.account} and body is ${body}`,
+        message: `The Account : ${body.account} with username ${tgUserIdIp} has been added to the Group for ${amountIp} SOL`,
       },
     });
 
@@ -141,10 +145,10 @@ export const POST = async (req: Request) => {
       headers: ACTIONS_CORS_HEADERS,
     });
   } catch (error) {
-    console.error("Error fetching Figma data:", error); // Log the error message specifically
+    console.error("Error fetching TG data:", error); // Log the error message specifically
     return new Response(
       JSON.stringify({
-        error: "Failed to fetch Figma data xyz",
+        error: "Failed to fetch TG data xyz",
         originalError: error, // Include the specific error message in the response
       }),
       {
