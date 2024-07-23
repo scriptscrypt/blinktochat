@@ -3,12 +3,12 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { headers } from "next/headers";
 
-const headersList = headers();
-const fullUrl = headersList.get("referer") || "";
-
+// const fullUrl = headers().get("referer") || "";
+const fullUrl = "https://teleblinks.vercel.app";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
+  
   title: "Tg Blink",
   description:
     "Personalized / Gated group chat to only those who blinked you on X.",
