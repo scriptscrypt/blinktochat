@@ -12,6 +12,7 @@
     "@solana/actions": "^1.2.0",
     "@solana/web3.js": "^1.95.1",
     "axios": "^1.7.2",
+    "grammy": "^1.27.0",
     "mongodb": "^6.8.0",
     "next": "14.2.5",
     "node-telegram-bot-api": "^0.66.0",

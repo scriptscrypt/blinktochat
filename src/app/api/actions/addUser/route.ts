@@ -1,4 +1,8 @@
 import {
+  envTelegramBotToken,
+  envTelegramChatId,
+} from "@/lib/envConfig/envConfig";
+import {
   ActionPostResponse,
   ACTIONS_CORS_HEADERS,
   createPostResponse,
@@ -14,8 +18,26 @@ import {
   Transaction,
 } from "@solana/web3.js";
 import axios from "axios";
+import { Bot } from "grammy";
+
+const BOT_TOKEN = envTelegramBotToken;
+const GROUP_CHAT_ID = envTelegramChatId;
+
+const bot = new Bot(BOT_TOKEN || "");
 
 export const GET = async (req: Request) => {
+  bot.on("message", async (ctx) => {
+    const chatId = ctx.chat.id;
+    console.log(`Received message from chat ID: ${chatId}`);
+
+    // You can send this ID back to yourself or log it
+    // await ctx.reply(`This group's ID is: ${chatId}`);
+  });
+
+  //
+  console.log(`Starting the bot`);
+  bot.start();
+
   const requestUrl = new URL(req.url);
   // const { validator } = validatedQueryParams(requestUrl);
 
@@ -109,7 +131,7 @@ export const POST = async (req: Request) => {
 
     const data = response.json || {};
 
-    console.log(`data in addUser is`, data);
+    console.log(`data in addUser is`, JSON.stringify(data, null, 2));
 
     const connection = new Connection(
       process.env.SOLANA_RPC! || clusterApiUrl("devnet")
@@ -137,7 +159,13 @@ export const POST = async (req: Request) => {
     const payload: ActionPostResponse = await createPostResponse({
       fields: {
         transaction,
-        message: `The Account : ${body.account} with username ${tgUserIdIp} has been added to the Group for ${amountIp} SOL`,
+        message: `The Account : ${
+          body.account
+        } with username ${tgUserIdIp} has been added to the Group for ${amountIp} SOL data : ${JSON.stringify(
+          data,
+          null,
+          2
+        )}`,
       },
     });
 
