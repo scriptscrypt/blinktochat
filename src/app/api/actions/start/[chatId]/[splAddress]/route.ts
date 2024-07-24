@@ -22,11 +22,17 @@ import {
 import axios from "axios";
 import { Bot } from "grammy";
 
+const bot = new Bot(envTelegramBotToken || "");
 export const GET = async (
   req: Request,
   { params: { chatId, splAddress } }: { params: any }
 ) => {
   const routeChatId = chatId;
+
+  const chatDetails = await bot.api.getChat(routeChatId);
+
+  const chatTitle = chatDetails.title;
+  console.log(`chatDetails is`, chatDetails);
 
   console.log(`Starting the bot`);
 
@@ -37,10 +43,9 @@ export const GET = async (
   const baseHref = new URL(`/api/actions`, requestUrl.origin).toString();
 
   const payload: ActionGetResponse = {
-    title:
-      "Blinktochat.fun - Gated group chat access to only those Who BLINKed You on X",
+    title: `Blinktochat.fun`, 
     icon: new URL("/btcLarge.gif", new URL(req.url).origin).toString(),
-    description: "Share your Telegram alias, Blink some SOL, join the fun!",
+    description: `\nGet access to ${chatTitle?.toUpperCase()}\n \nShare your Telegram alias, Blink some SOL, join the fun!`,
     label: "Enter your Telegram userId",
     links: {
       actions: [
