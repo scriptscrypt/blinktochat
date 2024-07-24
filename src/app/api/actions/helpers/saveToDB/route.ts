@@ -16,6 +16,7 @@ export async function POST(req: Request) {
   const usernameIp = requestUrl.searchParams.get("paramUsername");
   const tgChatId = requestUrl.searchParams.get("paramTgChatId");
   const account = requestUrl.searchParams.get("paramAccount");
+  const splAddress = requestUrl.searchParams.get("paramSPLAddress");
   const telegramIdIp = usernameIp;
 
   try {
@@ -42,9 +43,10 @@ export async function POST(req: Request) {
       amount,
       tgChatId,
       account,
-      date: Date.now(),
-      inviteLink: utilExtractInviteLink(inviteLinkRes),
       hasJoined: false,
+      inviteLink: utilExtractInviteLink(inviteLinkRes),
+      splAddress,
+      timestamp: Date.now().toString(),
     });
 
     if (utilExtractInviteLink(inviteLinkRes) === null) {

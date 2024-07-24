@@ -1,9 +1,10 @@
 
-# Teleblink
+# Blinktochat.fun
 
 Personalized / Gated telegram group chat to only those who blinked you on X
 
-![Demo Image](https://github.com/scriptscrypt/tg-blink/blob/main/screenshots/ex1.png)
+![Demo Image](https://github.com/scriptscrypt/tg-blink/blob/main/screenshots/btc.gif)
+![Demo Image#2](https://github.com/scriptscrypt/tg-blink/blob/main/screenshots/btcLarge.png)
 
 ## Tech Stack
 

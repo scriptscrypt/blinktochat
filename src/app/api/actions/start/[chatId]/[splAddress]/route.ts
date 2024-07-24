@@ -1,4 +1,5 @@
 import {
+  envEnviroment,
   envSPLAddress,
   envTelegramBotToken,
 } from "@/lib/envConfig/envConfig";
@@ -8,6 +9,7 @@ import {
   createPostResponse,
   ActionGetResponse,
   ActionPostRequest,
+  ActionIdentifierError,
 } from "@solana/actions";
 import {
   clusterApiUrl,
@@ -20,42 +22,31 @@ import {
 import axios from "axios";
 import { Bot } from "grammy";
 
-export const GET = async (req: Request, { params : { chatId} }: { params: any }) => {
-  // bot.on("message", async (ctx) => {
-  //   const chatId = ctx.chat.id;
-  //   console.log(`Received message from chat ID: ${chatId}`);
-
-  //   // You can send this ID back to yourself or log it
-  //   // await ctx.reply(`This group's ID is: ${chatId}`);
-  // });
-
-
+export const GET = async (
+  req: Request,
+  { params: { chatId, splAddress } }: { params: any }
+) => {
   const routeChatId = chatId;
-  //
+
   console.log(`Starting the bot`);
-  // bot.start();
 
   const requestUrl = new URL(req.url);
-  // const { validator } = validatedQueryParams(requestUrl);
+  // const parVarSplAddress = requestUrl.searchParams.get("paramSPLAddress");
+  const parVarSplAddress = splAddress;
 
-  const baseHref = new URL(
-    // `/api/actions/test1?validator=${validator.toBase58()}`,
-    // requestUrl.origin,
-    `/api/actions`,
-    requestUrl.origin
-  ).toString();
+  const baseHref = new URL(`/api/actions`, requestUrl.origin).toString();
 
   const payload: ActionGetResponse = {
     title:
-      "Teleblinks - Gated group chat access to only those Who BLINKed You on X",
-    icon: new URL("/startImg.gif", new URL(req.url).origin).toString(),
+      "Blinktochat.fun - Gated group chat access to only those Who BLINKed You on X",
+    icon: new URL("/btcLarge.gif", new URL(req.url).origin).toString(),
     description: "Share your Telegram alias, Blink some SOL, join the fun!",
     label: "Enter your Telegram userId",
     links: {
       actions: [
         {
           label: "Enter the Chat",
-          href: `${baseHref}/start/${routeChatId}?paramTgUserId={paramTgUserId}&paramAmount={paramAmount}&paramTgChatId=${routeChatId}`,
+          href: `${baseHref}/start/${routeChatId}/${parVarSplAddress}?paramTgUserId={paramTgUserId}&paramAmount={paramAmount}&paramTgChatId=${routeChatId}`,
           parameters: [
             {
               name: "paramTgUserId",
@@ -71,6 +62,9 @@ export const GET = async (req: Request, { params : { chatId} }: { params: any })
         },
       ],
     },
+    // error: {
+    //   message: "Please check Group Id and Amount",
+    // }
   };
 
   return Response.json(payload, {
@@ -83,11 +77,16 @@ export const GET = async (req: Request, { params : { chatId} }: { params: any })
 export const OPTIONS = GET;
 
 // Testing in the Same File - Working :
-export const POST = async (req: Request, { params : { chatId} }: { params: any }) => {
+export const POST = async (
+  req: Request,
+  { params: { chatId, splAddress } }: { params: any }
+) => {
   const requestUrl = new URL(req.url);
+  console.log(`requestUrl is`, requestUrl);
   const tgUserIdIp = requestUrl.searchParams.get("paramTgUserId");
   const amountIp = requestUrl.searchParams.get("paramAmount");
-  // const routeChatId = requestUrl.searchParams.get("paramTgChatId");
+  // const parVarSplAddress = requestUrl.searchParams.get("paramSPLAddress");
+  const parVarSplAddress = splAddress;
   const routeChatId = chatId;
 
   // console.log(`tgAPIKEY is`, tgBotToken);
@@ -106,56 +105,61 @@ export const POST = async (req: Request, { params : { chatId} }: { params: any }
     );
   }
 
-    const connection = new Connection(
-      process.env.SOLANA_RPC! || clusterApiUrl("devnet")
-    );
+  const connection = new Connection(
+    process.env.SOLANA_RPC! ||
+      clusterApiUrl(envEnviroment === "production" ? "mainnet-beta" : "devnet")
+  );
 
-    // Get recent blockhash
-    const transaction = new Transaction();
-    // set the end user as the fee payer
-    const body: ActionPostRequest = await req.json();
-    const account = new PublicKey(body.account);
+  // Get recent blockhash
+  const transaction = new Transaction();
+  // set the end user as the fee payer
+  const body: ActionPostRequest = await req.json();
+  const account = new PublicKey(body.account);
 
-    transaction.add(
-      SystemProgram.transfer({
-        fromPubkey: account,
-        toPubkey: new PublicKey(envSPLAddress || account),
-        lamports: parseFloat(amountIp) * LAMPORTS_PER_SOL,
-      })
-    );
+  transaction.add(
+    SystemProgram.transfer({
+      fromPubkey: account,
+      toPubkey: new PublicKey(parVarSplAddress || envSPLAddress || account),
+      lamports: parseFloat(amountIp) * LAMPORTS_PER_SOL,
+    })
+  );
 
-    transaction.feePayer = account;
-    transaction.recentBlockhash = (
-      await connection.getLatestBlockhash()
-    ).blockhash;
+  transaction.feePayer = account;
+  transaction.recentBlockhash = (
+    await connection.getLatestBlockhash()
+  ).blockhash;
 
-    const baseHref = new URL(
-      // `/api/actions/test1?validator=${validator.toBase58()}`,
-      // requestUrl.origin,
-      `/api/actions/helpers/saveToDB`,
-      requestUrl.origin
-    ).toString();
-  
-    const url = `${baseHref}?paramAccount=${account}?paramTgUserId=${tgUserIdIp}&paramAmount=${amountIp}&paramUsername=${tgUserIdIp}&paramTgChatId=${routeChatId}`;
-  
-    // const headers = {
-    //   "Content-Type": "application/json",
-    // };
-  
-    try {
-      const response = await axios.post(url, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-  
-      // console.log(`data in /start is ${response?.data}`);
-  
-      // console.log(response?.data?.message);
-      const inviteLinkfromRes = response?.data?.message;
+  const baseHref = new URL(
+    // `/api/actions/test1?validator=${validator.toBase58()}`,
+    // requestUrl.origin,
+    `/api/actions/helpers/saveToDB`,
+    requestUrl.origin
+  ).toString();
 
-      // Before creating the post response, save the data to the DB
-      // Get Account from the request body
+  const url = `${baseHref}?paramAccount=${account}&paramTgUserId=${tgUserIdIp}&paramAmount=${amountIp}&paramUsername=${tgUserIdIp}&paramTgChatId=${routeChatId}&paramSPLAddress=${parVarSplAddress}`;
+
+  // const headers = {
+  //   "Content-Type": "application/json",
+  // };
+
+  try {
+    const response = await axios.post(url, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    // console.log(`data in /start is ${response?.data}`);
+
+    // console.log(response?.data?.message);
+
+    const inviteLinkfromRes = response?.data?.message;
+
+    if (!inviteLinkfromRes) {
+      throw new Error("Not a valid Group");
+    }
+    // Before creating the post response, save the data to the DB
+    // Get Account from the request body
     const payload: ActionPostResponse = await createPostResponse({
       fields: {
         transaction,

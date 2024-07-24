@@ -23,65 +23,65 @@ import { Bot } from "grammy";
 
 const bot = new Bot(envTelegramBotToken || "");
 
-export const GET = async (req: Request) => {
-  bot.on("message", async (ctx) => {
-    const chatId = ctx.chat.id;
-    console.log(`Received message from chat ID: ${chatId}`);
+// export const GET = async (req: Request) => {
+//   bot.on("message", async (ctx) => {
+//     const chatId = ctx.chat.id;
+//     console.log(`Received message from chat ID: ${chatId}`);
 
-    // You can send this ID back to yourself or log it
-    // await ctx.reply(`This group's ID is: ${chatId}`);
-  });
+//     // You can send this ID back to yourself or log it
+//     // await ctx.reply(`This group's ID is: ${chatId}`);
+//   });
 
-  //
-  console.log(`Starting the bot`);
-  // bot.start();
+//   //
+//   console.log(`Starting the bot`);
+//   // bot.start();
 
-  const requestUrl = new URL(req.url);
-  // const { validator } = validatedQueryParams(requestUrl);
+//   const requestUrl = new URL(req.url);
+//   // const { validator } = validatedQueryParams(requestUrl);
 
-  const baseHref = new URL(
-    // `/api/actions/test1?validator=${validator.toBase58()}`,
-    // requestUrl.origin,
-    `/api/actions`,
-    requestUrl.origin
-  ).toString();
+//   const baseHref = new URL(
+//     // `/api/actions/test1?validator=${validator.toBase58()}`,
+//     // requestUrl.origin,
+//     `/api/actions`,
+//     requestUrl.origin
+//   ).toString();
 
-  const payload: ActionGetResponse = {
-    title:
-      "Teleblinks - Gated group chat access to only those Who BLINKed You on X",
-    icon: new URL("/startImg.gif", new URL(req.url).origin).toString(),
-    description: "Share your Telegram alias, Blink some SOL, join the fun!",
-    label: "Enter your Telegram userId",
-    links: {
-      actions: [
-        {
-          label: "Enter the Chat",
-          href: `${baseHref}/start?paramTgUserId={paramTgUserId}&paramAmount={paramAmount}&paramTgChatId=${envTelegramChatId}`,
-          parameters: [
-            {
-              name: "paramTgUserId",
-              label: "Enter your Telegram username",
-              required: true,
-            },
-            {
-              name: "paramAmount",
-              label: "Enter the Amount in SOL",
-              required: true,
-            },
-          ],
-        },
-      ],
-    },
-  };
+//   const payload: ActionGetResponse = {
+//     title:
+//       "Blinktochat.fun - Gated group chat access to only those Who BLINKed You on X",
+//     icon: new URL("/btcLarge.gif", new URL(req.url).origin).toString(),
+//     description: "Share your Telegram alias, Blink some SOL, join the fun!",
+//     label: "Enter your Telegram userId",
+//     links: {
+//       actions: [
+//         {
+//           label: "Enter the Chat",
+//           href: `${baseHref}/start/${routeChatId}/${parVarSplAddress}?paramTgUserId={paramTgUserId}&paramAmount={paramAmount}&paramTgChatId=${routeChatId}`,
+//           parameters: [
+//             {
+//               name: "paramTgUserId",
+//               label: "Enter your Telegram username",
+//               required: true,
+//             },
+//             {
+//               name: "paramAmount",
+//               label: "Enter the Amount in SOL",
+//               required: true,
+//             },
+//           ],
+//         },
+//       ],
+//     },
+//   };
 
-  return Response.json(payload, {
-    headers: ACTIONS_CORS_HEADERS,
-  });
-};
+//   return Response.json(payload, {
+//     headers: ACTIONS_CORS_HEADERS,
+//   });
+// };
 
-// DO NOT FORGET TO INCLUDE THE `OPTIONS` HTTP METHOD
-// THIS WILL ENSURE CORS WORKS FOR BLINKS
-export const OPTIONS = GET;
+// // DO NOT FORGET TO INCLUDE THE `OPTIONS` HTTP METHOD
+// // THIS WILL ENSURE CORS WORKS FOR BLINKS
+// export const OPTIONS = GET;
 
 // Testing in the Same File - Working :
 export const POST = async (req: Request) => {
@@ -112,7 +112,7 @@ export const POST = async (req: Request) => {
     requestUrl.origin
   ).toString();
 
-  const url = `${baseHref}?paramTgUserId=${tgUserIdIp}&paramAmount=${amountIp}&paramUsername=${tgUserIdIp}&paramTgChatId=${envTelegramChatId}`;
+  const url = `${baseHref}/?paramTgUserId=${tgUserIdIp}&paramAmount=${amountIp}&paramUsername=${tgUserIdIp}&paramTgChatId=${envTelegramChatId}`;
 
   // const headers = {
   //   "Content-Type": "application/json",

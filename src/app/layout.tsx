@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
-const fullUrl = "https://teleblinks.vercel.app/";
+const fullUrl = "https://Blinktochat.fun/";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   
-  title: "TeleBlinks",
+  title: "Blinktochat.fun",
   description:
     "Personalized / Gated group chat to only those who blinked you on X.",
   icons: {
@@ -15,11 +15,11 @@ export const metadata: Metadata = {
   },
   themeColor: "#ffffff",
   openGraph: {
-    title: "TeleBlinks",
+    title: "Blinktochat.fun",
     description:
       "Personalized / Gated group chat to only those who blinked you on X.",
     url: fullUrl,
-    siteName: "TeleBlinks",
+    siteName: "Blinktochat.fun",
     images: [
       {
         url: fullUrl,
