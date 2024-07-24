@@ -5,7 +5,7 @@ import Image from "next/image";
 export default function Home() {
   // const headersList = headers();
   // const fullUrl = headersList.get("referer") || "";
-  const fullUrl = "https://Blinktochat.fun/";
+  const fullUrl = "https://blinktochat.fun/";
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
@@ -48,7 +48,7 @@ export default function Home() {
 
       <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-2 lg:text-left">
         <a
-          href={`https://dial.to/devnet?action=solana-action:${fullUrl}api/actions/start/-1002232395603/39G4S57hEMsbD1npzi22heiEvjAHnnTG3ixciDHozcNj`}
+          href={`https://dial.to/devnet?action=solana-action:${fullUrl}api/actions/start/-1002232395603/3Coor2Baqhi8GUZqFF3uRvd4xiCKX6XU2KbgsSVqkcbW`}
           className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
           target="_blank"
           rel="noopener noreferrer"
