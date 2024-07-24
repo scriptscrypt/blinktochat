@@ -1,10 +1,7 @@
-// app/api/actions/saveToDB/route.ts
+// app/api/actions/helpers/saveToDB/route.ts
 
-import { envMongoUri, envTelegramChatId } from "@/lib/envConfig/envConfig";
-import {
-  fnCreateUniqueInviteLink,
-  fnUnbanUser,
-} from "@/lib/telegrambotFns/botFns";
+import { envMongoUri } from "@/lib/envConfig/envConfig";
+import { fnCreateUniqueInviteLink } from "@/lib/telegrambotFns/botFns";
 import { utilExtractInviteLink } from "@/lib/utils/utilExtractInviteLink";
 import { MongoClient } from "mongodb";
 import { NextResponse } from "next/server";
@@ -17,6 +14,7 @@ export async function POST(req: Request) {
   const requestUrl = new URL(req.url);
   const amount = requestUrl.searchParams.get("paramAmount");
   const usernameIp = requestUrl.searchParams.get("paramUsername");
+  const tgChatId = requestUrl.searchParams.get("paramTgChatId");
   const telegramIdIp = usernameIp;
 
   try {
@@ -26,12 +24,12 @@ export async function POST(req: Request) {
 
     // // `users` is the collection name
     const usersCollection = db.collection("users");
-    if (!envTelegramChatId) {
+    if (!tgChatId) {
       throw new Error("Telegram chat ID is not set in environment variables");
     }
 
     const inviteLinkRes = await fnCreateUniqueInviteLink(
-      envTelegramChatId as string,
+      tgChatId as string,
       usernameIp as string
     );
 
@@ -55,7 +53,9 @@ export async function POST(req: Request) {
       console.log("User added successfully to database and Telegram group.");
       return Response.json({
         // message: `User added successfully to database and Telegram group. ${inviteLinkRes}`,
-        message: `${inviteLinkRes}`,
+        message: {
+          inviteLink: `${inviteLinkRes}`,
+        },
       });
     }
   } catch (error) {

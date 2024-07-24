@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   
-  title: "Tg Blink",
+  title: "TeleBlinks",
   description:
     "Personalized / Gated group chat to only those who blinked you on X.",
   icons: {
@@ -15,11 +15,11 @@ export const metadata: Metadata = {
   },
   themeColor: "#ffffff",
   openGraph: {
-    title: "Tg Blink",
+    title: "TeleBlinks",
     description:
       "Personalized / Gated group chat to only those who blinked you on X.",
     url: fullUrl,
-    siteName: "Tg Blink",
+    siteName: "TeleBlinks",
     images: [
       {
         url: fullUrl,

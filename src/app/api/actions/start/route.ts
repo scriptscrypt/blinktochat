@@ -1,4 +1,5 @@
 import {
+  envSPLAddress,
   envTelegramBotToken,
   envTelegramChatId,
 } from "@/lib/envConfig/envConfig";
@@ -20,10 +21,7 @@ import {
 import axios from "axios";
 import { Bot } from "grammy";
 
-const BOT_TOKEN = envTelegramBotToken;
-const GROUP_CHAT_ID = envTelegramChatId;
-
-const bot = new Bot(BOT_TOKEN || "");
+const bot = new Bot(envTelegramBotToken || "");
 
 export const GET = async (req: Request) => {
   bot.on("message", async (ctx) => {
@@ -49,19 +47,20 @@ export const GET = async (req: Request) => {
   ).toString();
 
   const payload: ActionGetResponse = {
-    title: "TGBlink - Telegram Blink",
-    icon: new URL("/image-Blink.png", new URL(req.url).origin).toString(),
-    description: "Let the magic happen on Telegram",
+    title:
+      "Teleblinks - Gated group chat access to only those Who BLINKed You on X",
+    icon: new URL("/startImg.gif", new URL(req.url).origin).toString(),
+    description: "Share your Telegram alias, Blink some SOL, join the fun!",
     label: "Enter your Telegram userId",
     links: {
       actions: [
         {
           label: "Enter the Chat",
-          href: `${baseHref}/addUser?paramTgUserId={paramTgUserId}&paramAmount={paramAmount}`,
+          href: `${baseHref}/start?paramTgUserId={paramTgUserId}&paramAmount={paramAmount}&paramTgChatId=${envTelegramChatId}`,
           parameters: [
             {
               name: "paramTgUserId",
-              label: "Enter the TgUserId",
+              label: "Enter your Telegram username",
               required: true,
             },
             {
@@ -85,14 +84,12 @@ export const GET = async (req: Request) => {
 export const OPTIONS = GET;
 
 // Testing in the Same File - Working :
-const tgBotToken = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN;
-
 export const POST = async (req: Request) => {
   const requestUrl = new URL(req.url);
   const tgUserIdIp = requestUrl.searchParams.get("paramTgUserId");
   const amountIp = requestUrl.searchParams.get("paramAmount");
 
-  console.log(`tgAPIKEY is`, tgBotToken);
+  // console.log(`tgAPIKEY is`, tgBotToken);
   console.log(`tgUserIdIp is`, tgUserIdIp);
   console.log(`amountIp is`, amountIp);
 
@@ -111,11 +108,11 @@ export const POST = async (req: Request) => {
   const baseHref = new URL(
     // `/api/actions/test1?validator=${validator.toBase58()}`,
     // requestUrl.origin,
-    `/api/actions/saveToDB`,
+    `/api/actions/helpers/saveToDB`,
     requestUrl.origin
   ).toString();
 
-  const url = `${baseHref}?paramTgUserId=${tgUserIdIp}&paramAmount=${amountIp}&paramUsername=${tgUserIdIp}`;
+  const url = `${baseHref}?paramTgUserId=${tgUserIdIp}&paramAmount=${amountIp}&paramUsername=${tgUserIdIp}&paramTgChatId=${envTelegramChatId}`;
 
   // const headers = {
   //   "Content-Type": "application/json",
@@ -128,7 +125,7 @@ export const POST = async (req: Request) => {
       },
     });
 
-    // console.log(`data in addUser is ${response?.data}`);
+    // console.log(`data in /start is ${response?.data}`);
 
     // console.log(response?.data?.message);
     const inviteLinkfromRes = response?.data?.message;
@@ -146,7 +143,7 @@ export const POST = async (req: Request) => {
     transaction.add(
       SystemProgram.transfer({
         fromPubkey: account,
-        toPubkey: account,
+        toPubkey: new PublicKey(envSPLAddress || account),
         lamports: parseFloat(amountIp) * LAMPORTS_PER_SOL,
       })
     );
@@ -160,7 +157,7 @@ export const POST = async (req: Request) => {
       fields: {
         transaction,
         // message: `The PubKey : ${body.account} with Telegram username ${tgUserIdIp} has been added to the Group for ${amountIp} SOL,  data : ${response}`,
-        message: inviteLinkfromRes,
+        message: inviteLinkfromRes?.inviteLink,
       },
     });
 
