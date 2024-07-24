@@ -43,7 +43,7 @@ export const GET = async (
   const baseHref = new URL(`/api/actions`, requestUrl.origin).toString();
 
   const payload: ActionGetResponse = {
-    title: `Blinktochat.fun`, 
+    title: `Blinktochat.fun`,
     icon: new URL("/btcLarge.gif", new URL(req.url).origin).toString(),
     description: `\nGet access to ${chatTitle?.toUpperCase()}\n \nShare your Telegram alias, Blink some SOL, join the fun!`,
     label: "Enter your Telegram userId",
@@ -98,10 +98,40 @@ export const POST = async (
   console.log(`tgUserIdIp is`, tgUserIdIp);
   console.log(`amountIp is`, amountIp);
 
+  const baseHref = new URL(
+    // `/api/actions/test1?validator=${validator.toBase58()}`,
+    // requestUrl.origin,
+    `/api/actions/helpers/`,
+    requestUrl.origin
+  ).toString();
+
   if (!tgUserIdIp || !amountIp) {
     return new Response(
       JSON.stringify({
         error: "Invalid parameters: paramTgUserId or paramAmount",
+      }),
+      {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
+
+  // Check if the Data in DB by the BOT : chatId, splAddress is correct or not :
+
+  const validateUrl = `${baseHref}/validateParams?paramTgChatId=${routeChatId}&paramSPLAddress=${parVarSplAddress}`;
+
+  const response = await axios.post(validateUrl, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (response.data.message.status === false) {
+    return new Response(
+      JSON.stringify({
+        message: "GroupId or SPLAddress is not correct",
+        error: response.data.error,
       }),
       {
         status: 400,
@@ -134,14 +164,7 @@ export const POST = async (
     await connection.getLatestBlockhash()
   ).blockhash;
 
-  const baseHref = new URL(
-    // `/api/actions/test1?validator=${validator.toBase58()}`,
-    // requestUrl.origin,
-    `/api/actions/helpers/saveToDB`,
-    requestUrl.origin
-  ).toString();
-
-  const url = `${baseHref}?paramAccount=${account}&paramTgUserId=${tgUserIdIp}&paramAmount=${amountIp}&paramUsername=${tgUserIdIp}&paramTgChatId=${routeChatId}&paramSPLAddress=${parVarSplAddress}`;
+  const url = `${baseHref}saveToDB?paramAccount=${account}&paramTgUserId=${tgUserIdIp}&paramAmount=${amountIp}&paramUsername=${tgUserIdIp}&paramTgChatId=${routeChatId}&paramSPLAddress=${parVarSplAddress}`;
 
   // const headers = {
   //   "Content-Type": "application/json",
