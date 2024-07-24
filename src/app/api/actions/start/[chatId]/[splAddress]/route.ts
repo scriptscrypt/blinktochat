@@ -23,63 +23,63 @@ import axios from "axios";
 import { Bot } from "grammy";
 
 const bot = new Bot(envTelegramBotToken || "");
-export const GET = async (
-  req: Request,
-  { params: { chatId, splAddress } }: { params: any }
-) => {
-  const routeChatId = chatId;
+// export const GET = async (
+//   req: Request,
+//   { params: { chatId, splAddress } }: { params: any }
+// ) => {
+//   const routeChatId = chatId;
 
-  const chatDetails = await bot.api.getChat(routeChatId);
+//   const chatDetails = await bot.api.getChat(routeChatId);
 
-  const chatTitle = chatDetails.title;
-  console.log(`chatDetails is`, chatDetails);
+//   const chatTitle = chatDetails.title;
+//   console.log(`chatDetails is`, chatDetails);
 
-  console.log(`Starting the bot`);
+//   console.log(`Starting the bot`);
 
-  const requestUrl = new URL(req.url);
-  // const parVarSplAddress = requestUrl.searchParams.get("paramSPLAddress");
-  const parVarSplAddress = splAddress;
+//   const requestUrl = new URL(req.url);
+//   // const parVarSplAddress = requestUrl.searchParams.get("paramSPLAddress");
+//   const parVarSplAddress = splAddress;
 
-  const baseHref = new URL(`/api/actions`, requestUrl.origin).toString();
+//   const baseHref = new URL(`/api/actions`, requestUrl.origin).toString();
 
-  const payload: ActionGetResponse = {
-    title: `Blinktochat.fun`,
-    icon: new URL("/btcLarge.gif", new URL(req.url).origin).toString(),
-    description: `\nGet access to ${chatTitle?.toUpperCase()}\n \nShare your Telegram alias, Blink some SOL, join the fun!`,
-    label: "Enter your Telegram userId",
-    links: {
-      actions: [
-        {
-          label: "Enter the Chat",
-          href: `${baseHref}/start/${routeChatId}/${parVarSplAddress}?paramTgUserId={paramTgUserId}&paramAmount={paramAmount}&paramTgChatId=${routeChatId}`,
-          parameters: [
-            {
-              name: "paramTgUserId",
-              label: "Enter your Telegram username",
-              required: true,
-            },
-            {
-              name: "paramAmount",
-              label: "Enter the Amount in SOL",
-              required: true,
-            },
-          ],
-        },
-      ],
-    },
-    // error: {
-    //   message: "Please check Group Id and Amount",
-    // }
-  };
+//   const payload: ActionGetResponse = {
+//     title: `Blinktochat.fun`,
+//     icon: new URL("/btcLarge.gif", new URL(req.url).origin).toString(),
+//     description: `\nGet access to ${chatTitle?.toUpperCase()}\n \nShare your Telegram alias, Blink some SOL, join the fun!`,
+//     label: "Enter your Telegram userId",
+//     links: {
+//       actions: [
+//         {
+//           label: "Enter the Chat",
+//           href: `${baseHref}/start/${routeChatId}/${parVarSplAddress}?paramTgUserId={paramTgUserId}&paramAmount={paramAmount}&paramTgChatId=${routeChatId}`,
+//           parameters: [
+//             {
+//               name: "paramTgUserId",
+//               label: "Enter your Telegram username",
+//               required: true,
+//             },
+//             {
+//               name: "paramAmount",
+//               label: "Enter the Amount in SOL",
+//               required: true,
+//             },
+//           ],
+//         },
+//       ],
+//     },
+//     // error: {
+//     //   message: "Please check Group Id and Amount",
+//     // }
+//   };
 
-  return Response.json(payload, {
-    headers: ACTIONS_CORS_HEADERS,
-  });
-};
+//   return Response.json(payload, {
+//     headers: ACTIONS_CORS_HEADERS,
+//   });
+// };
 
 // DO NOT FORGET TO INCLUDE THE `OPTIONS` HTTP METHOD
 // THIS WILL ENSURE CORS WORKS FOR BLINKS
-export const OPTIONS = GET;
+// export const OPTIONS = GET;
 
 // Testing in the Same File - Working :
 export const POST = async (
