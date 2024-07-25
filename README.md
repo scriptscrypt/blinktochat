@@ -44,7 +44,7 @@ NEXT_PUBLIC_TELEGRAM_CHAT_ID=-100XXXXXX
 NEXT_PUBLIC_ENVIROMENT=Your environment - development || production
 
 SOLANA_RPC=Your solana RPC
+
 ```
 
 All the configs for it will be available in `src/lib/envConfig/envConfig.ts`
-
