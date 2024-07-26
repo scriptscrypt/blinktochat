@@ -140,6 +140,10 @@ export const POST = async (
     );
   }
 
+  // Here according to ActionPostResponse type we should expose a transaction and a message.
+  // So according to the above code, we can do any computation here
+  // but we need to prioritise and put that data which should be stored on the Blockchain, 
+  // so we need the transaction object from @solana/web3.js library to create a transaction and add that to the blockchain.
   const connection = new Connection(
     process.env.SOLANA_RPC! ||
       clusterApiUrl(envEnviroment === "production" ? "mainnet-beta" : "devnet")
@@ -151,11 +155,23 @@ export const POST = async (
   const body: ActionPostRequest = await req.json();
   const account = new PublicKey(body.account);
 
+  const totalAmount = parseFloat(amountIp) * LAMPORTS_PER_SOL;
+  const amountToParVar = Math.floor(totalAmount * 0.95); // 95% to parVarSplAddress
+  const amountToEnvSPL = totalAmount - amountToParVar; // Remaining 5% to envSPLAddress
+
   transaction.add(
     SystemProgram.transfer({
       fromPubkey: account,
-      toPubkey: new PublicKey(parVarSplAddress || envSPLAddress || account),
-      lamports: parseFloat(amountIp) * LAMPORTS_PER_SOL,
+      toPubkey: new PublicKey(parVarSplAddress),
+      lamports: amountToParVar,
+    })
+  );
+
+  transaction.add(
+    SystemProgram.transfer({
+      fromPubkey: account,
+      toPubkey: new PublicKey(envSPLAddress || account),
+      lamports: amountToEnvSPL,
     })
   );
 
