@@ -51,7 +51,7 @@ export const GET = async (
       actions: [
         {
           label: "Enter the Chat",
-          href: `${baseHref}/start/${routeChatId}/${parVarSplAddress}?paramTgUserId={paramTgUserId}&paramAmount={paramAmount}&paramTgChatId=${routeChatId}`,
+          href: `${baseHref}/${routeChatId}/${parVarSplAddress}?paramTgUserId={paramTgUserId}&paramAmount={paramAmount}&paramTgChatId=${routeChatId}`,
           parameters: [
             {
               name: "paramTgUserId",
@@ -140,10 +140,7 @@ export const POST = async (
     );
   }
 
-  // Here according to ActionPostResponse type we should expose a transaction and a message.
-  // So according to the above code, we can do any computation here
-  // but we need to prioritise and put that data which should be stored on the Blockchain, 
-  // so we need the transaction object from @solana/web3.js library to create a transaction and add that to the blockchain.
+  // Transaction part for  SOL tx :
   const connection = new Connection(
     process.env.SOLANA_RPC! ||
       clusterApiUrl(envEnviroment === "production" ? "mainnet-beta" : "devnet")
@@ -154,6 +151,22 @@ export const POST = async (
   // set the end user as the fee payer
   const body: ActionPostRequest = await req.json();
   const account = new PublicKey(body.account);
+
+
+  // Get NFTs for a user and validate : 
+  // const getNftsUrl = `${baseHref}/getAssetsByAddress?paramOwnerAddress=${parVarSplAddress}`;
+  const getNftsUrl = `${baseHref}/getAssetsByAddress?paramOwnerAddress=86xCnPeV69n6t3DnyGvkKobf9FdN2H9oiVDdaMpo2MMY`;
+
+  const getNftsResponse = await axios.post(getNftsUrl, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  console.log(`getNftsResponse is`, getNftsResponse.data);
+
+  if (getNftsResponse?.data == null || []) {
+    throw new Error(`No assets found for owner ${parVarSplAddress}`);
+  }
 
   const totalAmount = parseFloat(amountIp) * LAMPORTS_PER_SOL;
   const amountToParVar = Math.floor(totalAmount * 0.95); // 95% to parVarSplAddress
@@ -182,20 +195,12 @@ export const POST = async (
 
   const url = `${baseHref}saveToDB?paramAccount=${account}&paramTgUserId=${tgUserIdIp}&paramAmount=${amountIp}&paramUsername=${tgUserIdIp}&paramTgChatId=${routeChatId}&paramSPLAddress=${parVarSplAddress}`;
 
-  // const headers = {
-  //   "Content-Type": "application/json",
-  // };
-
   try {
     const response = await axios.post(url, {
       headers: {
         "Content-Type": "application/json",
       },
     });
-
-    // console.log(`data in /start is ${response?.data}`);
-
-    // console.log(response?.data?.message);
 
     const inviteLinkfromRes = response?.data?.message;
 
