@@ -114,6 +114,18 @@ export const POST = async (
     );
   }
 
+  if (Number(amountIp) < 0.00000001) {
+    return NextResponse?.json(
+      {
+        message: "Invalid Amount: Amount must be greater than 0.00000001",
+      },
+      {
+        headers: ACTIONS_CORS_HEADERS,
+        status: 400,
+      }
+    );
+  }
+
   // Check if the Data in DB by the BOT : chatId, splAddress is correct or not :
 
   const validateUrl = `${baseHref}/validateParams?paramTgChatId=${routeChatId}&paramSPLAddress=${parVarSplAddress}`;
