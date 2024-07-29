@@ -1,5 +1,6 @@
 import { envHeliusApiKey, envHeliusRpcUrl } from "@/lib/envConfig/envConfig";
 import axios from "axios";
+import fs from "fs";
 
 const url = envHeliusRpcUrl;
 if (!url) {
@@ -31,6 +32,10 @@ export const POST = async (req: Request) => {
 
   const assets = assetsByOwnerRes.data.result.items;
   console.log("Assets by Owner: ", assets);
+
+  fs.writeFileSync("assetsByOwner.txt", JSON.stringify(assets, null, 2));
+
+
 
   // Some error - TBD
   // if (assets.length == 0) {

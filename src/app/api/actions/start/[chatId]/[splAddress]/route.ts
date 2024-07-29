@@ -21,6 +21,7 @@ import {
 } from "@solana/web3.js";
 import axios from "axios";
 import { Bot } from "grammy";
+import { NextResponse } from "next/server";
 
 const bot = new Bot(envTelegramBotToken || "");
 export const GET = async (
@@ -51,7 +52,7 @@ export const GET = async (
       actions: [
         {
           label: "Enter the Chat",
-          href: `${baseHref}/${routeChatId}/${parVarSplAddress}?paramTgUserId={paramTgUserId}&paramAmount={paramAmount}&paramTgChatId=${routeChatId}`,
+          href: `${baseHref}/start/${routeChatId}/${parVarSplAddress}?paramTgUserId={paramTgUserId}&paramAmount={paramAmount}&paramTgChatId=${routeChatId}`,
           parameters: [
             {
               name: "paramTgUserId",
@@ -90,29 +91,25 @@ export const POST = async (
   console.log(`requestUrl is`, requestUrl);
   const tgUserIdIp = requestUrl.searchParams.get("paramTgUserId");
   const amountIp = requestUrl.searchParams.get("paramAmount");
-  // const parVarSplAddress = requestUrl.searchParams.get("paramSPLAddress");
   const parVarSplAddress = splAddress;
   const routeChatId = chatId;
 
-  // console.log(`tgAPIKEY is`, tgBotToken);
   console.log(`tgUserIdIp is`, tgUserIdIp);
   console.log(`amountIp is`, amountIp);
 
   const baseHref = new URL(
-    // `/api/actions/test1?validator=${validator.toBase58()}`,
-    // requestUrl.origin,
     `/api/actions/helpers/`,
     requestUrl.origin
   ).toString();
 
   if (!tgUserIdIp || !amountIp) {
-    return new Response(
-      JSON.stringify({
-        error: "Invalid parameters: paramTgUserId or paramAmount",
-      }),
+    return NextResponse?.json(
       {
+        message: "Invalid parameters: paramTgUserId or paramAmount",
+      },
+      {
+        headers: ACTIONS_CORS_HEADERS,
         status: 400,
-        headers: { "Content-Type": "application/json" },
       }
     );
   }
@@ -128,14 +125,15 @@ export const POST = async (
   });
 
   if (response.data.message.status === false) {
-    return new Response(
-      JSON.stringify({
+    return NextResponse?.json(
+      {
         message: "GroupId or SPLAddress is not correct",
         error: response.data.error,
-      }),
+      },
+
       {
+        headers: ACTIONS_CORS_HEADERS,
         status: 400,
-        headers: { "Content-Type": "application/json" },
       }
     );
   }
@@ -152,20 +150,47 @@ export const POST = async (
   const body: ActionPostRequest = await req.json();
   const account = new PublicKey(body.account);
 
+  // Get NFTs for a user and validate:
 
-  // Get NFTs for a user and validate : 
-  // const getNftsUrl = `${baseHref}/getAssetsByAddress?paramOwnerAddress=${parVarSplAddress}`;
-  const getNftsUrl = `${baseHref}/getAssetsByAddress?paramOwnerAddress=86xCnPeV69n6t3DnyGvkKobf9FdN2H9oiVDdaMpo2MMY`;
+  const getNftsUrl = `${baseHref}getAssetsByAddress?paramOwnerAddress=${account.toBase58()}`;
 
   const getNftsResponse = await axios.post(getNftsUrl, {
     headers: {
       "Content-Type": "application/json",
     },
   });
-  console.log(`getNftsResponse is`, getNftsResponse.data);
 
-  if (getNftsResponse?.data == null || []) {
-    throw new Error(`No assets found for owner ${parVarSplAddress}`);
+  const nfts = getNftsResponse.data;
+  if (nfts.length === 0) {
+    return NextResponse.json(
+      {
+        message: `You don't have any NFT`,
+      },
+      {
+        headers: ACTIONS_CORS_HEADERS,
+        status: 400,
+      }
+    );
+  }
+  console.log(`First NFT in response:`, nfts[0]);
+
+  const desiredNftMintAddress = parVarSplAddress; // This might need to be a different value
+  const userHasNft = nfts.some((nft: any) => {
+    nft?.grouping?.[0]?.group_value === desiredNftMintAddress;
+  });
+
+  if (!userHasNft) {
+    return NextResponse.json(
+      {
+        message: `You don't have the NFT from ${parVarSplAddress}`,
+      },
+      {
+        headers: ACTIONS_CORS_HEADERS,
+        status: 400,
+      }
+    );
+  } else {
+    console.log(`User has NFT:`, userHasNft);
   }
 
   const totalAmount = parseFloat(amountIp) * LAMPORTS_PER_SOL;
@@ -180,14 +205,6 @@ export const POST = async (
     })
   );
 
-  transaction.add(
-    SystemProgram.transfer({
-      fromPubkey: account,
-      toPubkey: new PublicKey(envSPLAddress || account),
-      lamports: amountToEnvSPL,
-    })
-  );
-
   transaction.feePayer = account;
   transaction.recentBlockhash = (
     await connection.getLatestBlockhash()
@@ -195,45 +212,37 @@ export const POST = async (
 
   const url = `${baseHref}saveToDB?paramAccount=${account}&paramTgUserId=${tgUserIdIp}&paramAmount=${amountIp}&paramUsername=${tgUserIdIp}&paramTgChatId=${routeChatId}&paramSPLAddress=${parVarSplAddress}`;
 
-  try {
-    const response = await axios.post(url, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+  const res = await axios.post(url, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 
-    const inviteLinkfromRes = response?.data?.message;
+  const inviteLinkfromRes = res?.data?.message;
 
-    if (!inviteLinkfromRes) {
-      throw new Error("Not a valid Group");
-    }
-    // Before creating the post response, save the data to the DB
-    // Get Account from the request body
-    const payload: ActionPostResponse = await createPostResponse({
-      fields: {
-        transaction,
-        // message: `The PubKey : ${body.account} with Telegram username ${tgUserIdIp} has been added to the Group for ${amountIp} SOL,  data : ${response}`,
-        message: inviteLinkfromRes?.inviteLink,
-      },
-    });
-
-    return Response.json(payload, {
-      headers: ACTIONS_CORS_HEADERS,
-    });
-  } catch (error) {
-    console.error("Error fetching TG data:", error); // Log the error message specifically
-    return new Response(
-      JSON.stringify({
-        error: "Failed to fetch TG data xyz",
-        originalError: error, // Include the specific error message in the response
-      }),
+  if (!inviteLinkfromRes) {
+    // throw new Error("Not a valid Group");
+    return NextResponse.json(
       {
-        status: 500,
-        headers: {
-          ...ACTIONS_CORS_HEADERS,
-          "Access-Control-Allow-Origin": "*",
-        }, // Ensure CORS headers are correctly set
+        message: "Failed to create an Invite Link",
+      },
+      {
+        headers: ACTIONS_CORS_HEADERS,
+        status: 400,
       }
     );
   }
+
+  // Before creating the post response, save the data to the DB
+  // Get Account from the request body
+  const payload: ActionPostResponse = await createPostResponse({
+    fields: {
+      transaction,
+      message: inviteLinkfromRes?.inviteLink,
+    },
+  });
+
+  return Response.json(payload, {
+    headers: ACTIONS_CORS_HEADERS,
+  });
 };
