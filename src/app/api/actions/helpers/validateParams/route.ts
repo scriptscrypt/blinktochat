@@ -27,7 +27,7 @@ export async function POST(req: Request) {
       throw new Error("Telegram chat ID is not set in environment variables");
     }
 
-    if (!groupsCollection.findOne({ tgChatId: tgChatId, account: account })) {
+    if (!groupsCollection.findOne({ tgChatId: tgChatId, collectionAddress: splAddress })) {
       return Response.json({
         message: {
           status: false,
