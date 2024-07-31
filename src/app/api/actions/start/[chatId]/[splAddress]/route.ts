@@ -45,7 +45,7 @@ export const GET = async (
 
   const payload: ActionGetResponse = {
     title: `Blinktochat.fun`,
-    icon: new URL("/btcLarge.gif", new URL(req.url).origin).toString(),
+    icon: new URL("/new-banner-2.png", new URL(req.url).origin).toString(),
     description: `\nGet access to ${chatTitle?.toUpperCase()}\n \nShare your Telegram alias, Blink some SOL, join the fun!`,
     label: "Enter your Telegram userId",
     links: {
