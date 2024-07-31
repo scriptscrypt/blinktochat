@@ -11,12 +11,12 @@ export const GET = async () => {
         apiPath: "/api/actions/start/*",
       },
       // idempotent rule as the fallback
-      {
-        // pathPattern: "/api/actions/**",
-        // apiPath: "/api/actions/**",
-        pathPattern: "/api/actions/start/**",
-        apiPath: "/api/actions/start/**",
-      },
+      // {
+      //   // pathPattern: "/api/actions/**",
+      //   // apiPath: "/api/actions/**",
+      //   pathPattern: "/api/actions/start/**",
+      //   apiPath: "/api/actions/start/**",
+      // },
     ],
   };
 
