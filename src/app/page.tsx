@@ -5,7 +5,8 @@ import Image from "next/image";
 export default function Home() {
   // const headersList = headers();
   // const fullUrl = headersList.get("referer") || "";
-  const fullUrl = "https://blinktochat.fun/";
+  // const fullUrl = "https://blinktochat.fun/";
+  const fullUrl = "http://localhost:3000/";
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">

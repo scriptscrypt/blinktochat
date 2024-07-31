@@ -161,10 +161,10 @@ export const POST = async (
   // set the end user as the fee payer
   const body: ActionPostRequest = await req.json();
   const account = new PublicKey(body.account);
-
+  const tolyAddress = "86xCnPeV69n6t3DnyGvkKobf9FdN2H9oiVDdaMpo2MMY";
+  let paramPage = 1;
   // Get NFTs for a user and validate:
-
-  const getNftsUrl = `${baseHref}getAssetsByAddress?paramOwnerAddress=${account.toBase58()}`;
+  const getNftsUrl = `${baseHref}getAssetsByAddress?paramOwnerAddress=${tolyAddress}&paramPage=${paramPage}`;
 
   const getNftsResponse = await axios.post(getNftsUrl, {
     headers: {
@@ -188,7 +188,8 @@ export const POST = async (
 
   const desiredNftMintAddress = parVarSplAddress; // This might need to be a different value
   const userHasNft = nfts.some((nft: any) => {
-    nft?.grouping?.[0]?.group_value === desiredNftMintAddress;
+    console.log(`Checking NFT:`, nft);
+    return nft?.grouping?.[0]?.group_value === desiredNftMintAddress;
   });
 
   if (!userHasNft) {
