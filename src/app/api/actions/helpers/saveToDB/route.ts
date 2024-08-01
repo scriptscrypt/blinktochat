@@ -46,6 +46,7 @@ export async function POST(req: Request) {
       hasJoined: false,
       inviteLink: utilExtractInviteLink(inviteLinkRes),
       splAddress,
+      hasTransacted: false,
       timestamp: Date.now().toString(),
     });
 

@@ -161,7 +161,7 @@ export const POST = async (
   // set the end user as the fee payer
   const body: ActionPostRequest = await req.json();
   const account = new PublicKey(body.account);
-  const tolyAddress = "86xCnPeV69n6t3DnyGvkKobf9FdN2H9oiVDdaMpo2MMY";
+  const tolyAddress = "86xCnPeV69n6t3DnyGvkKobf9FdN2H9oiVDdaMpo2MMY"; //For testing NFTs
   let paramPage = 1;
   // Get NFTs for a user and validate:
   const getNftsUrl = `${baseHref}getAssetsByAddress?paramOwnerAddress=${account?.toBase58()}&paramPage=${paramPage}`;
@@ -210,19 +210,6 @@ export const POST = async (
   const amountToParVar = Math.floor(totalAmount * 0.95); // 95% to parVarSplAddress
   const amountToEnvSPL = totalAmount - amountToParVar; // Remaining 5% to envSPLAddress
 
-  transaction.add(
-    SystemProgram.transfer({
-      fromPubkey: account,
-      toPubkey: new PublicKey(parVarSplAddress),
-      lamports: amountToParVar,
-    })
-  );
-
-  transaction.feePayer = account;
-  transaction.recentBlockhash = (
-    await connection.getLatestBlockhash()
-  ).blockhash;
-
   const url = `${baseHref}saveToDB?paramAccount=${account}&paramTgUserId=${tgUserIdIp}&paramAmount=${amountIp}&paramUsername=${tgUserIdIp}&paramTgChatId=${routeChatId}&paramSPLAddress=${parVarSplAddress}`;
 
   const res = await axios.post(url, {
@@ -232,6 +219,21 @@ export const POST = async (
   });
 
   const inviteLinkfromRes = res?.data?.message;
+
+  // Should we have a Wallet to send the SOL to? 
+  // or Should we have create a Wallet for every user and add the SOL to it?
+  transaction.add(
+    SystemProgram.transfer({
+      fromPubkey: account,
+      toPubkey: new PublicKey(account?.toBase58()),
+      lamports: amountToParVar,
+    })
+  );
+
+  transaction.feePayer = account;
+  transaction.recentBlockhash = (
+    await connection.getLatestBlockhash()
+  ).blockhash;
 
   if (!inviteLinkfromRes) {
     // throw new Error("Not a valid Group");
