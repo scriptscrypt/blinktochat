@@ -90,7 +90,8 @@ export const POST = async (
   const requestUrl = new URL(req.url);
   console.log(`requestUrl is`, requestUrl);
   const tgUserIdIp = requestUrl.searchParams.get("paramTgUserId");
-  const amountIp = requestUrl.searchParams.get("paramAmount");
+  let amountIp = Number(requestUrl.searchParams.get("paramAmount"));
+  if (!amountIp) amountIp = 0.001;
   const parVarSplAddress = splAddress;
   const routeChatId = chatId;
 
@@ -117,7 +118,7 @@ export const POST = async (
   if (Number(amountIp) < 0.00000001) {
     return NextResponse?.json(
       {
-        message: "Invalid Amount: Amount must be greater than 0.00000001",
+        message: "Invalid Amount: Amount must be greater than 0.001",
       },
       {
         headers: ACTIONS_CORS_HEADERS,
@@ -206,7 +207,7 @@ export const POST = async (
     console.log(`User has NFT:`, userHasNft);
   }
 
-  const totalAmount = parseFloat(amountIp) * LAMPORTS_PER_SOL;
+  const totalAmount = parseFloat(amountIp?.toString()) * LAMPORTS_PER_SOL;
   const amountToParVar = Math.floor(totalAmount * 0.95); // 95% to parVarSplAddress
   const amountToEnvSPL = totalAmount - amountToParVar; // Remaining 5% to envSPLAddress
 
@@ -220,7 +221,7 @@ export const POST = async (
 
   const inviteLinkfromRes = res?.data?.message;
 
-  // Should we have a Wallet to send the SOL to? 
+  // Should we have a Wallet to send the SOL to?
   // or Should we have create a Wallet for every user and add the SOL to it?
   transaction.add(
     SystemProgram.transfer({
