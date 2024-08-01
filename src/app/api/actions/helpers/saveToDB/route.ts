@@ -25,7 +25,7 @@ export async function POST(req: Request) {
     const db = client.db();
 
     // // `users` is the collection name
-    const usersCollection = db.collection("users");
+    const usersCollection = db.collection("tg-blinks.users");
     if (!tgChatId) {
       throw new Error("Telegram chat ID is not set in environment variables");
     }

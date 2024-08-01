@@ -1,8 +1,6 @@
 // app/api/actions/helpers/saveToDB/route.ts
 
 import { envMongoUri } from "@/lib/envConfig/envConfig";
-import { fnCreateUniqueInviteLink } from "@/lib/telegrambotFns/botFns";
-import { utilExtractInviteLink } from "@/lib/utils/utilExtractInviteLink";
 import { MongoClient } from "mongodb";
 import { NextResponse } from "next/server";
 
@@ -26,15 +24,18 @@ export async function POST(req: Request) {
     if (!tgChatId) {
       throw new Error("Telegram chat ID is not set in environment variables");
     }
+    console.log(groupsCollection)
+    const chat = await groupsCollection.findOne({ chatId: Number(tgChatId), collectionAddress: splAddress });
 
-    if (!groupsCollection.findOne({ tgChatId: tgChatId, collectionAddress: splAddress })) {
+    if (chat === null) {
+      console.log("Chat is not found on the DB");
       return Response.json({
         message: {
           status: false,
         },
       });
     } else {
-      console.log("User is found on the DB with correct values");
+      console.log("Chat is found on the DB with correct values");
       return Response.json({
         message: {
           status: true,

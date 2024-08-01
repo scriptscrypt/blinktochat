@@ -45,7 +45,7 @@ export const GET = async (
 
   const payload: ActionGetResponse = {
     title: `Blinktochat.fun`,
-    icon: new URL("/new-banner-2.png", new URL(req.url).origin).toString(),
+    icon: new URL("/new-banner-x.png", new URL(req.url).origin).toString(),
     description: `\nGet access to ${chatTitle?.toUpperCase()}\n \nShare your Telegram alias, Blink some SOL, join the fun!`,
     label: "Enter your Telegram userId",
     links: {
@@ -128,7 +128,7 @@ export const POST = async (
 
   // Check if the Data in DB by the BOT : chatId, splAddress is correct or not :
 
-  const validateUrl = `${baseHref}/validateParams?paramTgChatId=${routeChatId}&paramSPLAddress=${parVarSplAddress}`;
+  const validateUrl = `${baseHref}validateParams?paramTgChatId=${routeChatId}&paramSPLAddress=${parVarSplAddress}`;
 
   const response = await axios.post(validateUrl, {
     headers: {
@@ -139,7 +139,7 @@ export const POST = async (
   if (response.data.message.status === false) {
     return NextResponse?.json(
       {
-        message: "GroupId or SPLAddress is not correct",
+        message: "GroupId or Collection Address is not correct",
         error: response.data.error,
       },
 
@@ -164,7 +164,7 @@ export const POST = async (
   const tolyAddress = "86xCnPeV69n6t3DnyGvkKobf9FdN2H9oiVDdaMpo2MMY";
   let paramPage = 1;
   // Get NFTs for a user and validate:
-  const getNftsUrl = `${baseHref}getAssetsByAddress?paramOwnerAddress=${tolyAddress}&paramPage=${paramPage}`;
+  const getNftsUrl = `${baseHref}getAssetsByAddress?paramOwnerAddress=${account?.toBase58()}&paramPage=${paramPage}`;
 
   const getNftsResponse = await axios.post(getNftsUrl, {
     headers: {
