@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     siteName: "Blinktochat.fun",
     images: [
       {
-        url: "/new-banner-x.png",
+        url: "/new-banner-2.png",
         width: 1920,
         height: 1080,
       },
@@ -32,13 +32,13 @@ export const metadata: Metadata = {
     type: "website",
   },
   twitter: {
-    card: "/new-banner-x.png",
+    card: "/new-banner-2.png",
     site: "blinktochat.fun",
     creator: "@scriptscrypt",
     title: "Blink to Chat",
     description:
       "Personalized / Gated group chat to only those who blinked you on X.",
-    images: ["/new-banner-x.png"],
+    images: ["/new-banner-2.png"],
   } as Twitter,
 };
 
