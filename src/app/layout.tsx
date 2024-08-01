@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Twitter } from "next/dist/lib/metadata/types/twitter-types";
 
 const fullUrl = "https://Blinktochat.fun/";
 const inter = Inter({ subsets: ["latin"] });
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
     siteName: "Blinktochat.fun",
     images: [
       {
-        url: fullUrl,
+        url: "/public/new-banner-x.png",
         width: 1920,
         height: 1080,
       },
@@ -30,6 +31,15 @@ export const metadata: Metadata = {
     locale: "en-US",
     type: "website",
   },
+  twitter: {
+    card: "/public/new-banner-x.png",
+    site: "blinktochat.fun",
+    creator: "@scriptscrypt",
+    title: "Blink to Chat",
+    description:
+      "Personalized / Gated group chat to only those who blinked you on X.",
+    images: ["/public/new-banner-x.png"],
+  } as Twitter,
 };
 
 export default function RootLayout({
