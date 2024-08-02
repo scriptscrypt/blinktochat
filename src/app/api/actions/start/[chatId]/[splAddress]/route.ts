@@ -87,8 +87,11 @@ export const POST = async (
   req: Request,
   { params: { chatId, splAddress } }: { params: any }
 ) => {
+  console.log("Starting POST function");
+
   const requestUrl = new URL(req.url);
   console.log(`requestUrl is`, requestUrl);
+
   const tgUserIdIp = requestUrl.searchParams.get("paramTgUserId");
   let amountIp = Number(requestUrl.searchParams.get("paramAmount"));
   if (!amountIp) amountIp = 0.001;
@@ -97,17 +100,20 @@ export const POST = async (
 
   console.log(`tgUserIdIp is`, tgUserIdIp);
   console.log(`amountIp is`, amountIp);
+  console.log(`parVarSplAddress is`, parVarSplAddress);
+  console.log(`routeChatId is`, routeChatId);
 
   const baseHref = new URL(
     `/api/actions/helpers/`,
     requestUrl.origin
   ).toString();
+  console.log(`baseHref is`, baseHref);
 
   if (!tgUserIdIp || !amountIp) {
+    console.log("Invalid parameters: paramTgUserId or paramAmount");
     return NextResponse?.json(
       {
         message: "Invalid parameters: paramTgUserId or paramAmount",
-        // error: "paramTgUserId or paramAmount",
       },
       {
         headers: ACTIONS_CORS_HEADERS,
@@ -117,10 +123,10 @@ export const POST = async (
   }
 
   if (Number(amountIp) < 0.00000001) {
+    console.log("Invalid Amount: Amount must be greater than 0.001");
     return NextResponse?.json(
       {
         message: "Invalid Amount: Amount must be greater than 0.001",
-        // error: "Amount must be greater than 0.001",
       },
       {
         headers: ACTIONS_CORS_HEADERS,
@@ -130,22 +136,22 @@ export const POST = async (
   }
 
   // Check if the Data in DB by the BOT : chatId, collectionAddress is correct or not :
-
   const validateUrl = `${baseHref}validateParams?paramTgChatId=${routeChatId}&paramSPLAddress=${parVarSplAddress}`;
+  console.log(`validateUrl is`, validateUrl);
 
   const response = await axios.post(validateUrl, {
     headers: {
       "Content-Type": "application/json",
     },
   });
+  console.log(`validateParams response:`, response.data);
 
   if (response.data.message.status === false) {
+    console.log("GroupId or Collection Address is not correct");
     return NextResponse?.json(
       {
         message: "GroupId or Collection Address is not correct",
-        // error: response.data.error,
       },
-
       {
         headers: ACTIONS_CORS_HEADERS,
         status: 400,
@@ -153,34 +159,44 @@ export const POST = async (
     );
   }
 
-  // Transaction part for  SOL tx :
+  console.log("Validation passed, proceeding with transaction");
+
+  // Transaction part for SOL tx :
   const connection = new Connection(
     process.env.SOLANA_RPC! ||
       clusterApiUrl(envEnviroment === "production" ? "mainnet-beta" : "devnet")
   );
+  console.log("Connection established with Solana network");
 
   // Get recent blockhash
   const transaction = new Transaction();
-  // set the end user as the fee payer
+  console.log("Transaction object created");
+
+  // Set the end user as the fee payer
   const body: ActionPostRequest = await req.json();
+  console.log("Request body:", body);
+
   const account = new PublicKey(body.account);
-  // const tolyAddress = "86xCnPeV69n6t3DnyGvkKobf9FdN2H9oiVDdaMpo2MMY"; //For testing NFTs
-  let paramPage = 1;
+  console.log(`Account public key:`, account.toBase58());
+
   // Get NFTs for a user and validate:
+  let paramPage = 1;
   const getNftsUrl = `${baseHref}getAssetsByAddress?paramOwnerAddress=${account?.toBase58()}&paramPage=${paramPage}`;
+  console.log(`getNftsUrl is`, getNftsUrl);
 
   const getNftsResponse = await axios.post(getNftsUrl, {
     headers: {
       "Content-Type": "application/json",
     },
   });
+  console.log(`getAssetsByAddress response:`, getNftsResponse.data);
 
   const nfts = getNftsResponse.data;
   if (nfts.length === 0) {
+    console.log("User does not have any NFT");
     return NextResponse?.json(
       {
         message: `You don't have any NFT`,
-        // error: `You don't have any NFT`,
       },
       {
         headers: ACTIONS_CORS_HEADERS,
@@ -190,17 +206,19 @@ export const POST = async (
   }
   console.log(`First NFT in response:`, nfts[0]);
 
-  const desiredNftMintAddress = parVarSplAddress; // This might need to be a different value
+  const desiredNftMintAddress = parVarSplAddress;
+  console.log(`Desired NFT Mint Address:`, desiredNftMintAddress);
+
   const userHasNft = nfts.some((nft: any) => {
     console.log(`Checking NFT:`, nft);
     return nft?.grouping?.[0]?.group_value === desiredNftMintAddress;
   });
 
   if (!userHasNft) {
+    console.log(`User does not have the NFT from ${parVarSplAddress}`);
     return NextResponse?.json(
       {
         message: `You don't have the NFT from ${parVarSplAddress}`,
-        // error: `You don't have the NFT from ${parVarSplAddress}`,
       },
       {
         headers: ACTIONS_CORS_HEADERS,
@@ -208,25 +226,35 @@ export const POST = async (
       }
     );
   } else {
-    console.log(`User has NFT:`, userHasNft);
+    console.log(`User has NFT from ${parVarSplAddress}`);
   }
 
   const totalAmount = parseFloat(amountIp?.toString()) * LAMPORTS_PER_SOL;
-  const amountBackToUser = Math.floor(totalAmount * 0.95); // 95% back to the user's wallet
-  const amountToEnvSPL = totalAmount - amountBackToUser; // Remaining 5% to envSPLAddress
+  console.log(`Total amount in lamports:`, totalAmount);
+
+  const amountBackToUser = Math.floor(totalAmount * 0.95);
+  console.log(`Amount back to user:`, amountBackToUser);
+
+  const amountToEnvSPL = totalAmount - amountBackToUser;
+  console.log(`Amount to envSPLAddress:`, amountToEnvSPL);
+
   const validatorAddress = envSPLAddress;
+  console.log(`Validator address:`, validatorAddress);
+
   const url = `${baseHref}saveToDB?paramAccount=${account}&paramTgUserId=${tgUserIdIp}&paramAmount=${amountIp}&paramUsername=${tgUserIdIp}&paramTgChatId=${routeChatId}&paramSPLAddress=${parVarSplAddress}`;
+  console.log(`saveToDB URL:`, url);
 
   const res = await axios.post(url, {
     headers: {
       "Content-Type": "application/json",
     },
   });
+  console.log(`saveToDB response:`, res.data);
 
   const inviteLinkfromRes = res?.data?.message;
+  console.log(`Invite link from response:`, inviteLinkfromRes);
 
-  // Should we have a Wallet to send the SOL to?
-  // or Should we have create a Wallet for every user and add the SOL to it?
+  // Create transaction
   transaction.add(
     SystemProgram.transfer({
       fromPubkey: account,
@@ -234,6 +262,7 @@ export const POST = async (
       lamports: amountBackToUser,
     })
   );
+  console.log("Added transfer instruction for user");
 
   transaction.add(
     SystemProgram.transfer({
@@ -244,18 +273,19 @@ export const POST = async (
       lamports: amountToEnvSPL,
     })
   );
+  console.log("Added transfer instruction for envSPLAddress");
 
   transaction.feePayer = account;
   transaction.recentBlockhash = (
     await connection.getLatestBlockhash()
   ).blockhash;
+  console.log("Set fee payer and recent blockhash");
 
   if (!inviteLinkfromRes) {
-    // throw new Error("Not a valid Group");
+    console.log("Failed to create an Invite Link");
     return NextResponse?.json(
       {
         message: "Failed to create an Invite Link",
-        // error: "Failed to create an Invite Link",
       },
       {
         headers: ACTIONS_CORS_HEADERS,
@@ -263,6 +293,8 @@ export const POST = async (
       }
     );
   }
+
+  console.log("Creating post response");
 
   // Before creating the post response, save the data to the DB
   // Get Account from the request body
@@ -272,6 +304,7 @@ export const POST = async (
       message: inviteLinkfromRes?.inviteLink,
     },
   });
+  console.log("Post response payload:", payload);
 
   return Response.json(payload, {
     headers: ACTIONS_CORS_HEADERS,
