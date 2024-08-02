@@ -38,16 +38,16 @@ export async function POST(req: Request) {
     // save to DB :
     console.log("Telegram Id saving to DB", telegramIdIp);
     usersCollection.insertOne({
-      telegramIdIp,
-      usernameIp,
-      amount,
-      tgChatId,
-      account,
-      hasJoined: false,
-      inviteLink: utilExtractInviteLink(inviteLinkRes),
-      splAddress,
-      hasTransacted: false,
-      timestamp: Date.now().toString(),
+      keyTelegramId: telegramIdIp,
+      keyUsername: usernameIp,
+      keyAmount: amount,
+      keyTgChatId: tgChatId,
+      keyUserWallet: account,
+      keyHasJoined: false,
+      keyInviteLink: utilExtractInviteLink(inviteLinkRes),
+      keyCollectionAddress: splAddress,
+      keyHasTransacted: false,
+      keyTimestamp: Date.now().toString(),
     });
 
     if (utilExtractInviteLink(inviteLinkRes) === null) {

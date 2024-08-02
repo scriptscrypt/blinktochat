@@ -24,8 +24,11 @@ export async function POST(req: Request) {
     if (!tgChatId) {
       throw new Error("Telegram chat ID is not set in environment variables");
     }
-    console.log(groupsCollection)
-    const chat = await groupsCollection.findOne({ chatId: Number(tgChatId), collectionAddress: splAddress });
+    console.log(groupsCollection);
+    const chat = await groupsCollection.findOne({
+      keyChatId: Number(tgChatId),
+      keyCollectionAddress: splAddress,
+    });
 
     if (chat === null) {
       console.log("Chat is not found on the DB");
