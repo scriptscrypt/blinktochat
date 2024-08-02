@@ -107,7 +107,7 @@ export const POST = async (
     return NextResponse?.json(
       {
         message: "Invalid parameters: paramTgUserId or paramAmount",
-        error: "paramTgUserId or paramAmount",
+        // error: "paramTgUserId or paramAmount",
       },
       {
         headers: ACTIONS_CORS_HEADERS,
@@ -120,7 +120,7 @@ export const POST = async (
     return NextResponse?.json(
       {
         message: "Invalid Amount: Amount must be greater than 0.001",
-        error: "Amount must be greater than 0.001",
+        // error: "Amount must be greater than 0.001",
       },
       {
         headers: ACTIONS_CORS_HEADERS,
@@ -143,7 +143,7 @@ export const POST = async (
     return NextResponse?.json(
       {
         message: "GroupId or Collection Address is not correct",
-        error: response.data.error,
+        // error: response.data.error,
       },
 
       {
@@ -180,7 +180,7 @@ export const POST = async (
     return NextResponse?.json(
       {
         message: `You don't have any NFT`,
-        error: `You don't have any NFT`,
+        // error: `You don't have any NFT`,
       },
       {
         headers: ACTIONS_CORS_HEADERS,
@@ -200,7 +200,7 @@ export const POST = async (
     return NextResponse?.json(
       {
         message: `You don't have the NFT from ${parVarSplAddress}`,
-        error: `You don't have the NFT from ${parVarSplAddress}`,
+        // error: `You don't have the NFT from ${parVarSplAddress}`,
       },
       {
         headers: ACTIONS_CORS_HEADERS,
@@ -252,10 +252,10 @@ export const POST = async (
 
   if (!inviteLinkfromRes) {
     // throw new Error("Not a valid Group");
-    return NextResponse.json(
+    return NextResponse?.json(
       {
         message: "Failed to create an Invite Link",
-        error: "Failed to create an Invite Link",
+        // error: "Failed to create an Invite Link",
       },
       {
         headers: ACTIONS_CORS_HEADERS,
