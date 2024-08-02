@@ -262,7 +262,7 @@ export const POST = async (
       lamports: amountBackToUser,
     })
   );
-  console.log("Added transfer instruction for user");
+  console.log("Added transfer instruction for user: ");
 
   transaction.add(
     SystemProgram.transfer({
