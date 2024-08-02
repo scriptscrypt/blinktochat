@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Twitter } from "next/dist/lib/metadata/types/twitter-types";
 
@@ -23,7 +22,7 @@ export const metadata: Metadata = {
     siteName: "Blinktochat.fun",
     images: [
       {
-        url: "/new-banner-2.png",
+        url: `${fullUrl}/new-banner-2.png`,
         width: 1920,
         height: 1080,
       },
@@ -42,18 +41,10 @@ export const metadata: Metadata = {
   } as Twitter,
 };
 
-export default function RootLayout({
+export default function BaseLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en">
-      <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="light">
-          {children}
-        </ThemeProvider>
-      </body>
-    </html>
-  );
+  return <>{children}</>;
 }
