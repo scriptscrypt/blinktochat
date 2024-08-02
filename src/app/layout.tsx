@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     type: "website",
   },
   twitter: {
-    card: "Blink to Chat",
+    card: "summary_large_image",
     site: "blinktochat.fun",
     creator: "@scriptscrypt",
     title: "Blink to Chat",
