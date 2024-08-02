@@ -4,7 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Twitter } from "next/dist/lib/metadata/types/twitter-types";
 
-const fullUrl = "https://Blinktochat.fun/";
+const fullUrl = "https://Blinktochat.fun";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -33,12 +33,12 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    site: "blinktochat.fun",
-    creator: "@scriptscrypt",
+    site: "@0xsrinivasa",
+    creator: "@0xsrinivasa",
     title: "Blink to Chat",
     description:
       "Personalized / Gated group chat to only those who blinked you on X.",
-    image: "/new-banner-2.png",
+    image: `${fullUrl}/new-banner-2.png`,
   } as Twitter,
 };
 
