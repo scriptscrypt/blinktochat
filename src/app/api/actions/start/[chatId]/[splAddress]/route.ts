@@ -107,6 +107,7 @@ export const POST = async (
     return NextResponse?.json(
       {
         message: "Invalid parameters: paramTgUserId or paramAmount",
+        error: "paramTgUserId or paramAmount",
       },
       {
         headers: ACTIONS_CORS_HEADERS,
@@ -119,6 +120,7 @@ export const POST = async (
     return NextResponse?.json(
       {
         message: "Invalid Amount: Amount must be greater than 0.001",
+        error: "Amount must be greater than 0.001",
       },
       {
         headers: ACTIONS_CORS_HEADERS,
@@ -127,7 +129,7 @@ export const POST = async (
     );
   }
 
-  // Check if the Data in DB by the BOT : chatId, splAddress is correct or not :
+  // Check if the Data in DB by the BOT : chatId, collectionAddress is correct or not :
 
   const validateUrl = `${baseHref}validateParams?paramTgChatId=${routeChatId}&paramSPLAddress=${parVarSplAddress}`;
 
@@ -175,9 +177,10 @@ export const POST = async (
 
   const nfts = getNftsResponse.data;
   if (nfts.length === 0) {
-    return NextResponse.json(
+    return NextResponse?.json(
       {
         message: `You don't have any NFT`,
+        error: `You don't have any NFT`,
       },
       {
         headers: ACTIONS_CORS_HEADERS,
@@ -194,9 +197,10 @@ export const POST = async (
   });
 
   if (!userHasNft) {
-    return NextResponse.json(
+    return NextResponse?.json(
       {
         message: `You don't have the NFT from ${parVarSplAddress}`,
+        error: `You don't have the NFT from ${parVarSplAddress}`,
       },
       {
         headers: ACTIONS_CORS_HEADERS,
@@ -251,6 +255,7 @@ export const POST = async (
     return NextResponse.json(
       {
         message: "Failed to create an Invite Link",
+        error: "Failed to create an Invite Link",
       },
       {
         headers: ACTIONS_CORS_HEADERS,
