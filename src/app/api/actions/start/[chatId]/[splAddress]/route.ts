@@ -162,7 +162,7 @@ export const POST = async (
   // set the end user as the fee payer
   const body: ActionPostRequest = await req.json();
   const account = new PublicKey(body.account);
-  const tolyAddress = "86xCnPeV69n6t3DnyGvkKobf9FdN2H9oiVDdaMpo2MMY"; //For testing NFTs
+  // const tolyAddress = "86xCnPeV69n6t3DnyGvkKobf9FdN2H9oiVDdaMpo2MMY"; //For testing NFTs
   let paramPage = 1;
   // Get NFTs for a user and validate:
   const getNftsUrl = `${baseHref}getAssetsByAddress?paramOwnerAddress=${account?.toBase58()}&paramPage=${paramPage}`;
@@ -208,9 +208,9 @@ export const POST = async (
   }
 
   const totalAmount = parseFloat(amountIp?.toString()) * LAMPORTS_PER_SOL;
-  const amountToParVar = Math.floor(totalAmount * 0.95); // 95% to parVarSplAddress
-  const amountToEnvSPL = totalAmount - amountToParVar; // Remaining 5% to envSPLAddress
-
+  const amountBackToUser = Math.floor(totalAmount * 0.95); // 95% back to the user's wallet
+  const amountToEnvSPL = totalAmount - amountBackToUser; // Remaining 5% to envSPLAddress
+  const validatorAddress = envSPLAddress;
   const url = `${baseHref}saveToDB?paramAccount=${account}&paramTgUserId=${tgUserIdIp}&paramAmount=${amountIp}&paramUsername=${tgUserIdIp}&paramTgChatId=${routeChatId}&paramSPLAddress=${parVarSplAddress}`;
 
   const res = await axios.post(url, {
@@ -226,8 +226,18 @@ export const POST = async (
   transaction.add(
     SystemProgram.transfer({
       fromPubkey: account,
-      toPubkey: new PublicKey(account?.toBase58()),
-      lamports: amountToParVar,
+      toPubkey: account,
+      lamports: amountBackToUser,
+    })
+  );
+
+  transaction.add(
+    SystemProgram.transfer({
+      fromPubkey: account,
+      toPubkey: new PublicKey(
+        validatorAddress || "39G4S57hEMsbD1npzi22heiEvjAHnnTG3ixciDHozcNj"
+      ),
+      lamports: amountToEnvSPL,
     })
   );
 
