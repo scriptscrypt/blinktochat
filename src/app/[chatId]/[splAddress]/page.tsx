@@ -41,7 +41,7 @@ export default function Home() {
         </a>
 
         <a
-          href="https://github.com/scriptscrypt/tg-blink/"
+          href="https://github.com/scriptscrypt/blinktochat/"
           className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 "
           target="_blank"
           rel="noopener noreferrer"

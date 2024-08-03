@@ -3,8 +3,8 @@
 
 Personalized / Gated telegram group chat to only those who blinked you on X
 
-![Demo Image](https://github.com/scriptscrypt/tg-blink/blob/main/screenshots/btc.gif)
-![Demo Image#2](https://github.com/scriptscrypt/tg-blink/blob/main/screenshots/btcLarge.png)
+![Demo Image](https://github.com/scriptscrypt/blinktochat/blob/main/screenshots/btc.gif)
+![Demo Image#2](https://github.com/scriptscrypt/blinktochat/blob/main/screenshots/btcLarge.png)
 
 ## Tech Stack
 
@@ -22,7 +22,7 @@ Personalized / Gated telegram group chat to only those who blinked you on X
 
 ## Local Development 
 
-Clone the [repository](https://github.com/scriptscrypt/tg-blink)
+Clone the [repository](https://github.com/scriptscrypt/blinktochat)
 
 Install Nodejs Runtime (If not installed) - https://nodejs.org/en/download
 
