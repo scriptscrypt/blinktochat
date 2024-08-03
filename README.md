@@ -3,7 +3,7 @@
 
 Personalized / Gated telegram group chat to only those who blinked you on X
 
-![Demo Image](https://github.com/scriptscrypt/blinktochat/blob/main/screenshots/btc.gif)
+![Demo Image](https://github.com/scriptscrypt/blinktochat/blob/main/screenshots/new-banner-2.png)
 ![Demo Image#2](https://github.com/scriptscrypt/blinktochat/blob/main/screenshots/btcLarge.png)
 
 ## Tech Stack
