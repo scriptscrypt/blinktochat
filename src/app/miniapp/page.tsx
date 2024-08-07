@@ -166,18 +166,22 @@
 
 // export default MiniApp;
 
-
 // src/app/page.tsx
 
-import { FC } from 'react';
+import { FC } from "react";
 
 const MiniAppPage: FC = () => {
   return (
-    <div style={{ padding: '20px', textAlign: 'center' }}>
-      <h1>Welcome to the Mini App!</h1>
-      <p>This is a simple mini app page that you can open within Telegram.</p>
-      <p>Feel free to customize this content as needed.</p>
-    </div>
+    <>
+      <head>
+        <script src="https://telegram.org/js/telegram-web-app.js"></script>
+      </head>
+      <div style={{ padding: "20px", textAlign: "center" }}>
+        <h1>Welcome to the Mini App!</h1>
+        <p>This is a simple mini app page that you can open within Telegram.</p>
+        <p>Feel free to customize this content as needed.</p>
+      </div>
+    </>
   );
 };
 
