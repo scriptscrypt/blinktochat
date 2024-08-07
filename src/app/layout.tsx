@@ -3,9 +3,10 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Twitter } from "next/dist/lib/metadata/types/twitter-types";
-
 const fullUrl = "https://Blinktochat.fun";
 const inter = Inter({ subsets: ["latin"] });
+
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "Blinktochat.fun",
@@ -50,6 +51,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+      <Script
+        src="https://telegram.org/js/telegram-web-app.js"
+        strategy="beforeInteractive"
+      />
         <ThemeProvider attribute="class" defaultTheme="light">
           {children}
         </ThemeProvider>
